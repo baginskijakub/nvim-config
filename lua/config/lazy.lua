@@ -14,17 +14,15 @@ end
 -- Add lazy.nvim to rtp
 vim.opt.rtp:prepend(lazy_path)
 
--- Initialize lazy.nvim and define your plugins
 require("lazy").setup({
-  -- === Plugin List ==k
-
   require("config.plugins.nvimtree"), 
+  require("config.plugins.fugitive"),
+  require("config.plugins.lspconfig"),
 
-  -- { "tpope/vim-fugitive" },
   -- { "neovim/nvim-lspconfig" },
   -- { "nvim-telescope/telescope.nvim", tag = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
 }, {
-  -- Lazy.nvim options
   install = { colorscheme = { "default" } },
   ui = { border = "rounded" },
+  -- lazy 
 })
