@@ -11,18 +11,17 @@ if not vim.loop.fs_stat(lazy_path) then
   })
 end
 
--- Add lazy.nvim to rtp
 vim.opt.rtp:prepend(lazy_path)
 
 require("lazy").setup({
-  require("config.plugins.nvimtree"), 
+  require("config.plugins.nvimtree"),
   require("config.plugins.fugitive"),
   require("config.plugins.lspconfig"),
-
-  -- { "neovim/nvim-lspconfig" },
-  -- { "nvim-telescope/telescope.nvim", tag = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
+  require("config.plugins.scheme"),
+  require("config.plugins.telescope"),
+  require("config.plugins.harpoon"),
+  require("config.plugins.copilot"),
 }, {
   install = { colorscheme = { "default" } },
   ui = { border = "rounded" },
-  -- lazy 
 })

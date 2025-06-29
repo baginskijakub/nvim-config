@@ -1,10 +1,7 @@
--- ~/.config/nvim/lua/core/options.lua
-
 vim.opt.compatible = false -- Absolutely essential for modern Neovim config
 vim.opt.number = true      -- Line numbers
 vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
 
--- Basic quality-of-life options (optional, but highly recommended)
 vim.opt.termguicolors = true -- Enable true colors (important for themes)
 vim.opt.tabstop = 2        -- 1 tab = 2 spaces
 vim.opt.shiftwidth = 2     -- Shift operations = 2 spaces
