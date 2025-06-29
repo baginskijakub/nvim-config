@@ -12,6 +12,13 @@ vim.keymap.set("n", "<leader>u",
     desc = "Add 'use client' directive at the top of the file"
 })
 
+vim.keymap.set("n", "<leader>c", "gg0vGy",
+  {
+    noremap = true,
+    silent = true,
+    desc = "Copy everything in the file"
+})
+
 vim.keymap.set("n", "<leader>n", ":NvimTreeFocus<CR>", { noremap = true, silent = true, desc = "Focus dirs" })
 vim.keymap.set("n", "<leader>m", "<C-w>l", { noremap = true, silent = true, desc = "Focus file" })
 
