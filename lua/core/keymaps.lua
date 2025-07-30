@@ -25,4 +25,15 @@ vim.keymap.set("n", "<leader>c", "gg0vGy",
 vim.keymap.set("n", "<leader>n", ":NvimTreeFocus<CR>", { noremap = true, silent = true, desc = "Focus dirs" })
 vim.keymap.set("n", "<leader>m", "<C-w>l", { noremap = true, silent = true, desc = "Focus file" })
 
-vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
+local function remove_js_line_comments()
+  vim.cmd [[s/\/\/.*\|\/\*\_.\{-}\*\///g]]
+end
+
+local function remove_js_all_comments()
+  vim.cmd [[%s/\/\/.*\|\/\*\_.\{-}\*\///g]]
+end
+
+vim.keymap.set("n", "<leader>rl", remove_js_line_comments, { desc = "Remove JS/TS comment from current line" })
+vim.keymap.set("n", "<leader>ra", remove_js_all_comments, { desc = "Remove all JS/TS comments from file" })
+
+vim.keymap.set("n", "P", "ggVGp", { desc = "Replace entire file with pasted content" })

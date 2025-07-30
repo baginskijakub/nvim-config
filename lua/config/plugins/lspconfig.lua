@@ -11,6 +11,7 @@ return {
     "L3MON4D3/LuaSnip",
     "saadparwaiz1/cmp_luasnip",
     "j-hui/fidget.nvim",
+    "stevearc/conform.nvim", -- Add conform.nvim as a dependency
   },
   config = function()
     local cmp = require("cmp")
@@ -102,37 +103,57 @@ return {
         ["eslint"] = function()
           lspconfig.eslint.setup({
             capabilities = capabilities,
-            -- If you want to enable extra diagnostics or specific rules from the LSP
-            -- settings = {
-            --   -- Example: enable auto-fix on save via LSP (though the autocommand below is more direct)
-            --   -- provideFixes = {
-            --   --   auto = true,
-            --   -- }
-            -- }
           })
         end,
       },
     })
 
-    -- Autocommand for formatting on save
-    -- This creates a new autocommand group to ensure it's cleared and reset correctly
-    vim.api.nvim_create_autocmd("LspAttach", {
-      group = vim.api.nvim_create_augroup("LspFormattingOnSave", { clear = true }),
-      callback = function(args)
-        if not (args.data and args.data.client_id) then
-          return
-        end
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
+    -- CONFORM.NVIM SETUP
+    local conform = require("conform")
 
-        -- Only format on save for clients that support formatting and if auto-format is desired
-        if client.supports_method("textDocument/formatting") then
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            group = vim.api.nvim_create_augroup("FormatOnBufWrite", { clear = true }),
-            buffer = args.buf,
-            callback = function()
-              vim.lsp.buf.format({ bufnr = args.buf })
-            end,
-          })
+    conform.setup({
+      -- Define your formatters. You can add more like `prettier`, `black`, `isort`, etc.
+      formatters_by_ft = {
+        -- For JavaScript/TypeScript, we'll primarily use Prettier
+        javascript = { "prettier" },
+        javascriptreact = { "prettier" },
+        typescript = { "prettier" },
+        typescriptreact = { "prettier" },
+        json = { "prettier" },
+        css = { "prettier" },
+        scss = { "prettier" },
+        html = { "prettier" },
+        vue = { "prettier" },
+        markdown = { "prettier" },
+        lua = { "stylua" }, -- Example for Lua with Stylua
+        -- Add other filetypes and their preferred formatters here
+        -- python = { "isort", "black" }, -- Example for Python
+      },
+      -- Configure how to format on save
+      format_on_save = {
+        lsp_fallback = true, -- Try LSP formatters if no conform formatter is found
+        async = false,       -- Set to true to format asynchronously
+        timeout_ms = 500,    -- Timeout for the formatting process
+      },
+      -- You can also configure specific formatters here if they need custom arguments
+      -- formatters = {
+      --   prettier = {
+      --     args = { "--config-basedir", os.getenv("HOME") }, -- Example: if your prettier config is outside the project root
+      --   },
+      -- },
+    })
+
+    -- Instead of the old LspFormattingOnSave autocommand,
+    -- conform will handle `BufWritePre` itself if `format_on_save` is true.
+    -- We can remove or simplify your existing formatting autocommand.
+    -- If you want to keep the LspAttach, ensure it doesn't conflict.
+    -- For conform.nvim, you typically just need a single autocommand for formatting on save.
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      group = vim.api.nvim_create_augroup("ConformFormat", { clear = true }),
+      callback = function(args)
+        -- Only format if the buffer is a file (not a scratch buffer, etc.)
+        if vim.api.nvim_buf_get_option(args.buf, "buftype") == "" then
+          require("conform").format({ bufnr = args.buf, async = true })
         end
       end,
     })
@@ -157,51 +178,18 @@ return {
           end
         end, { "i", "s" }),
         ["<C-Space>"] = cmp.mapping.complete(),
-        -- If you want to use Tab to navigate and confirm, you could add:
-        -- ["<Tab>"] = cmp.mapping(function(fallback)
-        --   if cmp.visible() then
-        --     cmp.select_next_item(cmp_select)
-        --   elseif luasnip.expand_or_jumpable() then
-        --     luasnip.expand_or_jump()
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" }),
-        -- ["<S-Tab>"] = cmp.mapping(function(fallback)
-        --   if cmp.visible() then
-        --     cmp.select_prev_item(cmp_select)
-        --   elseif luasnip.jumpable(-1) then
-        --     luasnip.jump(-1)
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" }),
       }),
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- For luasnip users.
       }, {
         { name = "buffer" },
-        { name = "path" },    -- Add path completion
+        { name = "path" }, -- Add path completion
       }),
       window = {
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
       },
-      -- You can add a sorting function if desired, e.g., to prioritize specific sources
-      -- sorting = {
-      --   priority_weight = 2,
-      --   comparators = {
-      --     cmp.comparators.locality,
-      --     cmp.comparators.score,
-      --     cmp.comparators.recently_used,
-      --     cmp.comparators.exported,
-      --     cmp.comparators.kind,
-      --     cmp.comparators.sort_text,
-      --     cmp.comparators.length,
-      --     cmp.comparators.order,
-      --   },
-      -- },
     })
 
     -- Set up cmdline completion for cmp
@@ -217,7 +205,6 @@ return {
 
     -- Diagnostic settings
     vim.diagnostic.config({
-      -- update_in_insert = true, -- Consider keeping this commented or false as it can be distracting
       float = {
         focusable = false,
         style = "minimal",
@@ -241,7 +228,8 @@ return {
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename Symbol" })
     vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
     vim.keymap.set("n", "<leader>f", function()
-      vim.lsp.buf.format({ async = true })
+      -- Use conform's format command for manual formatting
+      require("conform").format({ async = true })
     end, { desc = "Format Document" })
   end,
 }
