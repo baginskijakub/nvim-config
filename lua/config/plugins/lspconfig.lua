@@ -218,6 +218,17 @@ return {
       underline = true,
     })
 
+    vim.api.nvim_create_autocmd("CursorHold", {
+      callback = function()
+        vim.diagnostic.open_float(nil, {
+          focusable = false,
+          border = "rounded",
+          source = "always",
+          scope = "cursor",
+        })
+      end,
+    })
+
     -- Keymaps for LSP navigation (optional, but highly recommended)
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
     vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to Declaration" })
