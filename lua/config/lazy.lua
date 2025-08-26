@@ -14,13 +14,14 @@ end
 vim.opt.rtp:prepend(lazy_path)
 
 require("lazy").setup({
-  require("config.plugins.nvimtree"),
+  "nvim-tree/nvim-web-devicons",
   require("config.plugins.fugitive"),
   require("config.plugins.lspconfig"),
   require("config.plugins.scheme"),
   require("config.plugins.telescope"),
   require("config.plugins.harpoon"),
   require("config.plugins.copilot"),
+  require("config.plugins.oil"),
 }, {
   install = { colorscheme = { "default" } },
   ui = { border = "rounded" },
