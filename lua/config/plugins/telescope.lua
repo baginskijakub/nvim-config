@@ -19,7 +19,6 @@ return {
       defaults = {
         path_display = { "truncate" },
         file_ignore_patterns = { "node_modules", ".git", "%.next" },
-        -- Use fzf_native as the sorter
         sorting_strategy = "ascending",
         layout_config = {
           height = 0.95,
@@ -40,8 +39,14 @@ return {
 
     local keymap = vim.keymap.set
 
+    -- File navigation
     keymap("n", "<leader>ff", builtin.find_files, { desc = "Find Files" })
     keymap("n", "<leader>bb", builtin.buffers, { desc = "Search Buffers" })
     keymap("n", "<leader>lg", builtin.live_grep, { desc = "Live Grep" })
+
+    -- LSP
+    keymap("n", "gr", builtin.lsp_references, { desc = "References" })
+    keymap("n", "gd", builtin.lsp_definitions, { desc = "Definitions" })
+    keymap("n", "gi", builtin.lsp_implementations, { desc = "Implementations" })
   end,
 }
