@@ -18,6 +18,7 @@ require("lazy").setup({
   require("config.plugins.fugitive"),
   require("config.plugins.lspconfig"),
   require("config.plugins.scheme"),
+  require("config.plugins.lualine"),
   require("config.plugins.telescope"),
   require("config.plugins.harpoon"),
   require("config.plugins.copilot"),
