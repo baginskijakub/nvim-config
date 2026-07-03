@@ -94,21 +94,40 @@ return {
       },
     })
 
+    -- oxlint LSP (project-local via oxlint --lsp)
+    lspconfig.oxlint.setup({
+      capabilities = capabilities,
+      cmd = { "oxlint", "--lsp" },
+      root_dir = require("lspconfig.util").root_pattern("oxlint.config.ts", ".oxlintrc.json"),
+      init_options = {
+        settings = {
+          typeAware = true,
+        },
+      },
+    })
+
     local conform = require("conform")
 
     conform.setup({
       formatters_by_ft = {
-        javascript = { "prettier" },
-        javascriptreact = { "prettier" },
-        typescript = { "prettier" },
-        typescriptreact = { "prettier" },
+        javascript = { "oxfmt", "prettier", stop_after_first = true },
+        javascriptreact = { "oxfmt", "prettier", stop_after_first = true },
+        typescript = { "oxfmt", "prettier", stop_after_first = true },
+        typescriptreact = { "oxfmt", "prettier", stop_after_first = true },
+        vue = { "oxfmt", "prettier", stop_after_first = true },
         json = { "prettier" },
         css = { "prettier" },
         scss = { "prettier" },
         html = { "prettier" },
-        vue = { "prettier" },
         markdown = { "prettier" },
         lua = { "stylua" },
+      },
+      formatters = {
+        oxfmt = {
+          command = "oxfmt",
+          args = { "--stdin-filepath", "$FILENAME" },
+          stdin = true,
+        },
       },
       format_on_save = {
         lsp_fallback = true,
